@@ -24,8 +24,6 @@ source $srcdir/diag.sh check-mainq-spool
 
 echo "Enter phase 2, rsyslogd restart"
 
-exit
-
 # restart engine and have rest processed
 #remove delay
 echo "#" > work-delay.conf
