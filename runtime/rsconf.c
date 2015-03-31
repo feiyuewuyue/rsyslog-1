@@ -359,9 +359,15 @@ parser_warnmsg(char *fmt, ...)
 	va_start(ap, fmt);
 	if(vsnprintf(errBuf, sizeof(errBuf), fmt, ap) == sizeof(errBuf))
 		errBuf[sizeof(errBuf)-1] = '\0';
-	errmsg.LogMsg(0, RS_RET_CONF_PARSE_WARNING, LOG_WARNING,
-			"warning during parsing file %s, on or before line %d: %s",
-			cnfcurrfn, yylineno, errBuf);
+	if(cnfcurrfn != NULL) {
+		errmsg.LogMsg(0, RS_RET_CONF_PARSE_WARNING, LOG_WARNING,
+				"warning during parsing file %s, on or before line %d: %s",
+				cnfcurrfn, yylineno, errBuf);
+	} else {
+		errmsg.LogMsg(0, RS_RET_CONF_PARSE_WARNING, LOG_WARNING,
+				"warning [after config has completey read]: %s",
+				errBuf);
+	}
 	va_end(ap);
 }
 

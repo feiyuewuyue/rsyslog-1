@@ -3483,8 +3483,21 @@ cnfstmtOptimizeAct(struct cnfstmt *stmt)
 	action_t *pAct;
 
 	pAct = stmt->d.act;
+	const int hasQueue = pAct->pQueue != NULL && qqueueGetType(pAct->pQueue) != QUEUETYPE_DIRECT;
+
+	if(hasQueue && stmt->next != NULL &&
+	   stmt->next->nodetype == S_ACT &&
+	   stmt->next->d.act->bExecWhenPrevSusp) {
+		parser_warnmsg("action '%s' configured with queue followed by failover "
+			"action - failover will never happen", pAct->pszName);
+		}
+
 	if(!strcmp((char*)modGetName(pAct->pMod), "builtin:omdiscard")) {
 		DBGPRINTF("optimizer: replacing omdiscard by STOP\n");
+		if(hasQueue) {
+			parser_errmsg("error: discard action '%s' configured to use queue - "
+				      "discard has no effect", pAct->pszName);
+		}
 		actionDestruct(stmt->d.act);
 		stmt->nodetype = S_STOP;
 	}

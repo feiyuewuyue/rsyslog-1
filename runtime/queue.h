@@ -193,6 +193,10 @@ struct queue_s {
 #define QUEUE_TIMEOUT_ETERNAL 24 * 60 * 60 * 1000
 
 /* prototypes */
+static inline queueType_t
+qqueueGetType(const qqueue_t *pThis) {
+	return pThis->qType;
+};
 rsRetVal qqueueDestruct(qqueue_t **ppThis);
 rsRetVal qqueueEnqMsg(qqueue_t *pThis, flowControl_t flwCtlType, msg_t *pMsg);
 rsRetVal qqueueStart(qqueue_t *pThis);
