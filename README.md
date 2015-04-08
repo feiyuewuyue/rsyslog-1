@@ -66,6 +66,15 @@ For the testbench VMs:
 
 sudo zypper install gvim mutt
 
+Debian
+~~~~~~
+
+sudo apt-get install git autoconf automake libtool flex bison make pkg-config libz-dev libjson0-dev uuid-dev libgcrypt-dev python-docutils 
+
+And if not under kfreebsd:
+
+sudo apt-get install valgrind
+
 Reporting Bugs
 ==============
 
