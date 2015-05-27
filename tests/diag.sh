@@ -80,12 +80,12 @@ case $1 in
    'startup')   # start rsyslogd with default params. $2 is the config file name to use
    		# returns only after successful startup, $3 is the instance (blank or 2!)
 		$valgrind ../tools/rsyslogd -C -n -irsyslog$3.pid -M../runtime/.libs:../.libs -f$srcdir/testsuites/$2 &
-   		$srcdir/diag.sh wait-startup $3 || source ./diag.sh error-exit  $?
+   		$srcdir/diag.sh wait-startup $3 || source $srcdir/diag.sh error-exit  $?
 		;;
    'startup-vg') # start rsyslogd with default params under valgrind control. $2 is the config file name to use
    		# returns only after successful startup, $3 is the instance (blank or 2!)
 		valgrind --log-fd=1 --error-exitcode=10 --malloc-fill=ff --free-fill=fe --leak-check=full ../tools/rsyslogd -C -n -irsyslog$3.pid -M../runtime/.libs:../.libs -f$srcdir/testsuites/$2 &
-   		$srcdir/diag.sh wait-startup $3 || source ./diag.sh error-exit  $?
+   		$srcdir/diag.sh wait-startup $3 || source $srcdir/diag.sh error-exit  $?
 		echo startup-vg still running
 		;;
    'startup-vg-noleak') # same as startup-vg, except that --leak-check is set to "none". This
@@ -94,7 +94,7 @@ case $1 in
 		# they are platform-dependent. In that case, we can't test for leak checks
 		# (obviously), but we can check for access violations, what still is useful.
 		valgrind --log-fd=1 --error-exitcode=10 --malloc-fill=ff --free-fill=fe --leak-check=no ../tools/rsyslogd -C -n -irsyslog$3.pid -M../runtime/.libs:../.libs -f$srcdir/testsuites/$2 &
-   		$srcdir/diag.sh wait-startup $3 || source ./diag.sh error-exit  $?
+   		$srcdir/diag.sh wait-startup $3 || source $srcdir/diag.sh error-exit  $?
 		echo startup-vg still running
 		;;
    'wait-startup') # wait for rsyslogd startup ($2 is the instance)
@@ -105,7 +105,7 @@ case $1 in
 			if test $i -gt $TB_TIMEOUT_STARTSTOP
 			then
 			   echo "ABORT! Timeout waiting on startup (pid file)"
-			   source ./diag.sh error-exit 1
+			   source $srcdir/diag.sh error-exit 1
 			fi
 		done
 		i=0
@@ -115,7 +115,7 @@ case $1 in
 			if test $i -gt $TB_TIMEOUT_STARTSTOP
 			then
 			   echo "ABORT! Timeout waiting on startup ('started' file)"
-			   source ./diag.sh error-exit 1
+			   source $srcdir/diag.sh error-exit 1
 			fi
 		done
 		echo "rsyslogd$2 started with pid " `cat rsyslog$2.pid`
@@ -138,7 +138,7 @@ case $1 in
 		then
 		   echo "ABORT! core file exists, starting interactive shell"
 		   bash
-		   source ./diag.sh error-exit  1
+		   source $srcdir/diag.sh error-exit  1
 		fi
 		;;
    'wait-shutdown-vg')  # actually, we wait for rsyslog.pid to be deleted. $2 is the
@@ -150,7 +150,7 @@ case $1 in
 		then
 		   echo "ABORT! core file exists, starting interactive shell"
 		   bash
-		   source ./diag.sh error-exit 1
+		   source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'check-exit-vg') # wait for main message queue to be empty. $2 is the instance.
@@ -163,17 +163,17 @@ case $1 in
    'get-mainqueuesize') # show the current main queue size
 		if [ "$2" == "2" ]
 		then
-			echo getmainmsgqueuesize | ./diagtalker -p13501 || source ./diag.sh error-exit  $?
+			echo getmainmsgqueuesize | ./diagtalker -p13501 || source $srcdir/diag.sh error-exit  $?
 		else
-			echo getmainmsgqueuesize | ./diagtalker || source ./diag.sh error-exit  $?
+			echo getmainmsgqueuesize | ./diagtalker || source $srcdir/diag.sh error-exit  $?
 		fi
 		;;
    'wait-queueempty') # wait for main message queue to be empty. $2 is the instance.
 		if [ "$2" == "2" ]
 		then
-			echo WaitMainQueueEmpty | ./diagtalker -p13501 || source ./diag.sh error-exit  $?
+			echo WaitMainQueueEmpty | ./diagtalker -p13501 || source $srcdir/diag.sh error-exit  $?
 		else
-			echo WaitMainQueueEmpty | ./diagtalker || source ./diag.sh error-exit  $?
+			echo WaitMainQueueEmpty | ./diagtalker || source $srcdir/diag.sh error-exit  $?
 		fi
 		;;
    'shutdown-when-empty') # shut rsyslogd down when main queue is empty. $2 is the instance.
@@ -196,12 +196,12 @@ case $1 in
 		if [ "$?" -ne "0" ]; then
 		  echo "error during tcpflood! see rsyslog.out.log.save for what was written"
 		  cp rsyslog.out.log rsyslog.out.log.save
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'injectmsg') # inject messages via our inject interface (imdiag)
 		echo injecting $3 messages
-		echo injectmsg $2 $3 $4 $5 | ./diagtalker || source ./diag.sh error-exit  $?
+		echo injectmsg $2 $3 $4 $5 | ./diagtalker || source $srcdir/diag.sh error-exit  $?
 		# TODO: some return state checking? (does it really make sense here?)
 		;;
    'check-mainq-spool') # check if mainqueue spool files exist, if not abort (we just check .qi).
@@ -210,7 +210,7 @@ case $1 in
 		if test ! -f test-spool/mainq.qi; then
 		  echo "error: mainq.qi does not exist where expected to do so!"
 		  ls -l test-spool
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'seq-check') # do the usual sequence check to see if everything was properly received. $2 is the instance.
@@ -222,7 +222,7 @@ case $1 in
 		./chkseq -fwork -s$2 -e$3 $4 $5 $6 $7
 		if [ "$?" -ne "0" ]; then
 		  echo "sequence error detected"
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'seq-check2') # do the usual sequence check to see if everything was properly received. This is
@@ -235,7 +235,7 @@ case $1 in
 		./chkseq -fwork2 -s$2 -e$3 $4 $5 $6 $7
 		if [ "$?" -ne "0" ]; then
 		  echo "sequence error detected"
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		rm -f work2
 		;;
@@ -243,20 +243,20 @@ case $1 in
 		cat rsyslog.out.log | grep -qF "$2"
 		if [ "$?" -ne "0" ]; then
 		    echo content-check failed
-		    source ./diag.sh error-exit 1
+		    source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'custom-content-check') 
 		cat $3 | grep -qF "$2"
 		if [ "$?" -ne "0" ]; then
 		    echo content-check failed to find "'$2'" inside "'$3'"
-		    source ./diag.sh error-exit 1
+		    source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'assert-content-missing') 
 		cat rsyslog.out.log | grep -qF "$2"
 		if [ "$?" -eq "0" ]; then
-		    source ./diag.sh error-exit 1
+		    source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'gzip-seq-check') # do the usual sequence check, but for gzip files
@@ -268,14 +268,14 @@ case $1 in
 		./chkseq -fwork -v -s$2 -e$3 $4 $5 $6 $7
 		if [ "$?" -ne "0" ]; then
 		  echo "sequence error detected"
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'nettester') # perform nettester-based tests
    		# use -v for verbose output!
 		./nettester -t$2 -i$3 $4
 		if [ "$?" -ne "0" ]; then
-		  source ./diag.sh error-exit 1
+		  source $srcdir/diag.sh error-exit 1
 		fi
 		;;
    'setzcat')   # find out name of zcat tool
@@ -286,11 +286,11 @@ case $1 in
 		fi
 		;;
    'generate-HOSTNAME')   # generate the HOSTNAME file
-		source $srcdir/diag.sh startup gethostname.conf || source ./diag.sh error-exit  $?
-		source $srcdir/diag.sh tcpflood -m1 -M "\"<128>\"" || source ./diag.sh error-exit  $?
+		source $srcdir/diag.sh startup gethostname.conf || source $srcdir/diag.sh error-exit  $?
+		source $srcdir/diag.sh tcpflood -m1 -M "\"<128>\"" || source $srcdir/diag.sh error-exit  $?
 		./msleep 100
-		source $srcdir/diag.sh shutdown-when-empty || source ./diag.sh error-exit  $?  # shut down rsyslogd when done processing messages
-		source $srcdir/diag.sh wait-shutdown || source ./diag.sh error-exit  $?	# we need to wait until rsyslogd is finished!
+		source $srcdir/diag.sh shutdown-when-empty || source $srcdir/diag.sh error-exit  $?  # shut down rsyslogd when done processing messages
+		source $srcdir/diag.sh wait-shutdown || source $srcdir/diag.sh error-exit  $?	# we need to wait until rsyslogd is finished!
 		;;
    'error-exit') # this is called if we had an error and need to abort. Here, we
                 # try to gather as much information as possible. That's most important
