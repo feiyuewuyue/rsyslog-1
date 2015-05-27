@@ -103,7 +103,7 @@ extern int yyerror(char*);
 %type <nvlst> nv nvlst value
 %type <obj> obj property constant
 %type <objlst> propconst
-%type <expr> expr
+%type <expr> expr backticks_param
 %type <stmt> stmt s_act actlst block script
 %type <itr> iterator_decl
 %type <fparams> fparams
@@ -153,6 +153,7 @@ nvlst:					{ $$ = NULL; }
 	| nvlst nv 			{ $2->next = $1; $$ = $2; }
 nv:	NAME '=' value 			{ $$ = nvlstSetName($3, $1); }
 value:	  STRING			{ $$ = nvlstNewStr($1); }
+	| backticks_param		{ $$ = nvlstNewExpr($1); }
 	| array				{ $$ = nvlstNewArray($1); }
 script:	  stmt				{ $$ = $1; }
 	| script stmt			{ $$ = scriptAddStmt($1, $2); }
@@ -216,6 +217,7 @@ array:	 '[' arrayelt ']'		{ $$ = $2; }
 iterator_decl:  '(' VAR ITERATOR_ASSIGNMENT expr ')'	{ $$ = cnfNewIterator($2, $4); }
 arrayelt: STRING			{ $$ = cnfarrayNew($1); }
 	| arrayelt ',' STRING		{ $$ = cnfarrayAdd($1, $3); }
+backticks_param: '`' expr '`'		{ $$ = $2; }
 
 %%
 /*

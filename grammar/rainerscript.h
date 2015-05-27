@@ -335,6 +335,7 @@ void objlstDestruct(struct objlst *lst);
 void objlstPrint(struct objlst *lst);
 struct nvlst* nvlstNewArray(struct cnfarray *ar);
 struct nvlst* nvlstNewStr(es_str_t *value);
+struct nvlst* nvlstNewExpr(struct cnfexpr *expr);
 struct nvlst* nvlstSetName(struct nvlst *lst, es_str_t *name);
 void nvlstDestruct(struct nvlst *lst);
 void nvlstPrint(struct nvlst *lst);
