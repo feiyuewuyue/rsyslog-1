@@ -154,6 +154,24 @@ precaution to prevent signature loss. Note that any already existing
 .old or .new files are overwritten by these operations.
 
 
+convert
+------
+Since rsyslog 8.12.0, the format for signature files has been changed from
+version 1.0 (LOGSIG10) to version 2.0 (LOGSIG11). The format introduced some
+changes that break compatibility between both formats. In order to be able
+to read signature files written with previous rsyslog version, rsgtutil now
+contains a conversion operation mode. To convert a signature file, use
+rsgtutil with the -c, --convert switch following the .gtsig or .ksisig file.
+If the conversion is successful, the new .gtsig file will be in version 2.0
+format and the old file will be saved as backup into .gtsig.LOGSIG10
+
+**Example:**
+If the logfile is named logfile, and you want to convert a version 1.0
+guardtime signature file, use the following command to start the conversion
+into format version 2.0:
+**rsgtutil --convert logfile.gtsig**
+
+
 detect-file-type
 ----------------
 This mode is used to detect the type of some well-know files used inside the 
