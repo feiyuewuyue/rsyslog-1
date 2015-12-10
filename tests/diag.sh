@@ -210,7 +210,11 @@ case $1 in
 		# note: we do not wait for the actual termination!
 		;;
    'shutdown-immediate') # shut rsyslogd down without emptying the queue. $2 is the instance.
-		kill `cat rsyslog.pid`
+		if [ "$2" == "2" ]
+		then
+		   echo Shutting down instance 2
+		fi
+		kill `cat rsyslog$2.pid`
 		# note: we do not wait for the actual termination!
 		;;
    'tcpflood') # do a tcpflood run and check if it worked params are passed to tcpflood
