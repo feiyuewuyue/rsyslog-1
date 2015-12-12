@@ -477,7 +477,7 @@ CODESTARTdoAction
 	ret = relpCltSendSyslog(pWrkrData->pRelpClt, (uchar*) pMsg, lenMsg);
 	if(ret != RELP_RET_OK) {
 		/* error! */
-		dbgprintf("error forwarding via relp, suspending\n");
+		dbgprintf("error %d forwarding via relp, suspending\n", ret);
 		ABORT_FINALIZE(RS_RET_SUSPENDED);
 	}
 
