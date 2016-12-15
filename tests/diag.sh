@@ -71,7 +71,7 @@ case $1 in
 		rm -f work rsyslog.out.log rsyslog2.out.log rsyslog.out.log.save # common work files
 		rm -rf test-spool test-logdir stat-file1
 		rm -f rsyslog.out.*.log work-presort rsyslog.pipe
-		rm -f rsyslog.input rsyslog.empty
+		rm -f rsyslog.input rsyslog.empty rsyslog.input.* imfile-state*
 		rm -f testconf.conf HOSTNAME
 		rm -f rsyslog.errorfile tmp.qi
 		rm -f core.* vgcore.*
@@ -116,7 +116,7 @@ case $1 in
 		rm -f work rsyslog.out.log rsyslog2.out.log rsyslog.out.log.save # common work files
 		rm -rf test-spool test-logdir stat-file1
 		rm -f rsyslog.out.*.log rsyslog.random.data work-presort rsyslog.pipe
-		rm -f rsyslog.input rsyslog.conf.tlscert stat-file1 rsyslog.empty
+		rm -f rsyslog.input rsyslog.conf.tlscert stat-file1 rsyslog.empty  rsyslog.input.* imfile-state*
 		rm -f testconf.conf
 		rm -f rsyslog.errorfile tmp.qi
 		rm -f HOSTNAME imfile-state:.-rsyslog.input
