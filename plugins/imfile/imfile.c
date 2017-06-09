@@ -2245,6 +2245,11 @@ in_handleDirEvent(struct inotify_event *const ev, const int dirIdx)
 			in_handleDirEventDirDELETE(ev, dirIdx);		/* Create new Dir */
 		else
 			in_handleDirEventFileDELETE(ev, dirIdx);	/* Delete File from dir filetable */
+	} else if((ev->mask & IN_MOVED_TO)) {
+		if((ev->mask & IN_ISDIR))
+			in_handleDirEventDirCREATE(ev, dirIdx); /* Create new Dir */
+		else
+			in_handleDirEventFileCREATE(ev, dirIdx); /* Create new File */
 	} else {
 		DBGPRINTF("imfile: got non-expected inotify event:\n");
 		in_dbg_showEv(ev);
